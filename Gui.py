@@ -1,4 +1,4 @@
-import pygame 
+import pygame
 import time
 pygame.font.init()
 
@@ -34,7 +34,7 @@ class Grid:
             self.cubes[row][col].set(val)
             self.update_model()
 
-            if valid(self.model, val, (row,col)) and solve(self.model):
+            if valid(self.model, val, (row, col)) and solve(self.model):
                 return True
             else:
                 self.cubes[row][col].set(0)
@@ -49,12 +49,12 @@ class Grid:
     def draw(self, win):
         # Draw Grid Lines
         gap = self.width / 9
-        for i in range(self.rows+1):
+        for i in range(self.rows + 1):
             if i % 3 == 0 and i != 0:
                 thick = 4
             else:
                 thick = 1
-            pygame.draw.line(win, (0,0,0), (0, i*gap), (self.width, i*gap), thick)
+            pygame.draw.line(win, (0, 0, 0), (0, i * gap), (self.width, i * gap), thick)
             pygame.draw.line(win, (0, 0, 0), (i * gap, 0), (i * gap, self.height), thick)
 
         # Draw Cubes
@@ -85,7 +85,7 @@ class Grid:
             gap = self.width / 9
             x = pos[0] // gap
             y = pos[1] // gap
-            return (int(y),int(x))
+            return int(y), int(x)
         else:
             return None
 
@@ -101,7 +101,7 @@ class Cube:
     rows = 9
     cols = 9
 
-    def __init__(self, value, row, col, width ,height):
+    def __init__(self, value, row, col, width, height):
         self.value = value
         self.temp = 0
         self.row = row
@@ -118,14 +118,14 @@ class Cube:
         y = self.row * gap
 
         if self.temp != 0 and self.value == 0:
-            text = fnt.render(str(self.temp), 1, (128,128,128))
-            win.blit(text, (x+5, y+5))
-        elif not(self.value == 0):
+            text = fnt.render(str(self.temp), 1, (128, 128, 128))
+            win.blit(text, (x + 5, y + 5))
+        elif self.value != 0:
             text = fnt.render(str(self.value), 1, (0, 0, 0))
-            win.blit(text, (x + (gap/2 - text.get_width()/2), y + (gap/2 - text.get_height()/2)))
+            win.blit(text, (x + (gap / 2 - text.get_width() / 2), y + (gap / 2 - text.get_height() / 2)))
 
         if self.selected:
-            pygame.draw.rect(win, (255,0,0), (x,y, gap ,gap), 3)
+            pygame.draw.rect(win, (255, 0, 0), (x, y, gap, gap), 3)
 
     def set(self, val):
         self.value = val
@@ -134,11 +134,7 @@ class Cube:
         self.temp = val
 
 
-    
-
-#####################################################################
 def valid(board, number, position):
-
     # checking row
     for i in range(len(board[0])):
         if board[position[0]][i] == number and position[1] != i:
@@ -150,15 +146,16 @@ def valid(board, number, position):
             return False
 
     # check which box  we are in
-    box_x = position[1] // 3 # integer division
+    box_x = position[1] // 3  # integer division
     box_y = position[0] // 3
 
-    for i in range(box_y*3, box_y*3 + 3):
-        for j in range(box_x*3, box_x*3 + 3):
+    for i in range(box_y * 3, box_y * 3 + 3):
+        for j in range(box_x * 3, box_x * 3 + 3):
             if board[i][j] == number and (i, j) != position:
                 return False
 
     return True
+
 
 def find_empty(board):
     for i in range(len(board)):
@@ -167,6 +164,7 @@ def find_empty(board):
                 return i, j
 
     return None
+
 
 def solve(board):
     find = find_empty(board)
@@ -188,38 +186,42 @@ def solve(board):
 
     return False
 
-#####################################################################
 
 def format_time(secs):
-    sec = secs%60
-    minute = secs//60
-    hour = minute//60
+    sec = secs % 60
+    minute = secs // 60
+    hour = minute // 60
 
     mat = " " + str(minute) + ":" + str(sec)
     return mat
 
+
 def redraw_window(win, board, time, strikes):
-    win.fill((255,255,255))
+    win.fill((255, 255, 255))
     # Draw time
     fnt = pygame.font.SysFont("timesnewroman", 40)
-    text = fnt.render("Time: " + format_time(time), 1, (0,0,0))
+    text = fnt.render("Time: " + format_time(time), 1, (0, 0, 0))
     win.blit(text, (540 - 160, 560))
     # Draw Strikes
     text = fnt.render("X " * strikes, 1, (255, 0, 0))
     win.blit(text, (20, 560))
     # Draw grid and board
     board.draw(win)
-    
 
 
 def main():
-    win = pygame.display.set_mode((540,600), pygame.RESIZABLE)
-    pygame.display.set_caption("Sudoku")
+    win = pygame.display.set_mode((540, 600), pygame.RESIZABLE)
+    pygame.display.set_caption("Project Sible")
     board = Grid(9, 9, 540, 540)
     key = None
     run = True
     start = time.time()
     strikes = 0
+
+    # Night mode button
+    night_mode_button = pygame.Rect(60, 540, 100, 50)
+    night_mode = False
+
     while run:
 
         play_time = round(time.time() - start)
@@ -266,14 +268,32 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 clicked = board.click(pos)
+
+                # Check if the night mode button is clicked
+                if night_mode_button.collidepoint(pos):
+                    night_mode = not night_mode
+
                 if clicked:
                     board.select(clicked[0], clicked[1])
                     key = None
 
-        if board.selected and key != None:
+        if board.selected and key is not None:
             board.sketch(key)
 
+        # Apply night mode
+        if night_mode:
+            win.fill((30, 30, 30))
+        else:
+            win.fill((255, 255, 255))
+
         redraw_window(win, board, play_time, strikes)
+
+        # Draw night mode button
+        if night_mode:
+            pygame.draw.rect(win, (180, 180, 180), night_mode_button)
+        else:
+            pygame.draw.rect(win, (100, 100, 100), night_mode_button)
+
         pygame.display.update()
 
 
