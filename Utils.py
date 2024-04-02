@@ -18,11 +18,17 @@ def save(path, data):
 
 # Is in row
 # Accepts 2 dimensional array and row number
-def in_row(grid, row):
-    return false
+# Zero indexed
+def in_row(grid, row, num):
+    return num in grid[row]
 
 # Is in column
 # Accepts 2 dimensional array and column number
-def in_column(grid, column):
-    return false
+# Zero indexed
+def in_column(grid, column, num):
+    for row in grid:
+        if num == row[column]:
+            return True
+    
+    return False
 
