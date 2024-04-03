@@ -46,20 +46,7 @@ def in_box(grid, row, column, num):
     
     return False  # Return False if the number is not found in the box
 
-
-if __name__ == "__main__":
-    import random
-
-    # Create a 9x9 list populated with random numbers between 1 and 100
-    nine_by_nine_list = [[random.randint(1, 100) for _ in range(9)] for _ in range(9)]
-    for row in nine_by_nine_list:
-        for value in row:
-            print(f"{value:3d}", end=" ")
-        print()
-    while True:
-        row = int(input("Enter a row: "))
-        column = int(input("Enter a column: "))
-        num = int(input("Enter a number: "))
-        print("Is in row:", in_row(nine_by_nine_list, row, num))
-        print("Is in box:", in_column(nine_by_nine_list, column, num))
-        print("Is in box:", in_box(nine_by_nine_list, row, column, num))
+# Returns if the given number is valid for the row and column in the sudoku grid
+# Must not have a duplicate in a row, column, or in the 3x3 box
+def is_valid_at_position(grid, row, column, num):
+    return not(in_row(grid, row, num) or in_column(grid, column, num) or in_box(grid, row, column, num))
