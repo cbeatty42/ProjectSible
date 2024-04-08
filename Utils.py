@@ -6,15 +6,13 @@ def load(path):
     f = open(path, "r")
     data = json.load(f)
     f.close()
-    return json.loads(data)
+    return data
 
 # Save file
 # Accepts a path and dictionary
 def save(path, data):
-    json_object = json.dumps(data, indent=4)
-    f = open(path, "w")
-    f.write(json_object)
-    f.close()
+    with open(path, "w") as file:
+        json.dump(data, file)
 
 # Is in row
 # Accepts 2 dimensional array and row number
