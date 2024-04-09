@@ -1,5 +1,6 @@
 import pygame
 import time
+from BoardGenerator import *
 pygame.font.init()
 
 # Define color schemes
@@ -60,6 +61,7 @@ class Grid:
     def __init__(self, rows, cols, width, height):
         self.rows = rows
         self.cols = cols
+        self.board = remove_numbers(generate_completed_sudoku_board())
         self.cubes = [[Cube(self.board[i][j], i, j, width, height) for j in range(cols)] for i in range(rows)]
         self.width = width
         self.height = height

@@ -36,5 +36,20 @@ def generate_completed_sudoku_board():
     board = [[None for _ in range(9)] for _ in range(9)]
     place_number(board, 0, 0)
     return board
-    
 
+# Accepts a board and returns a duplicate board with values missing
+def remove_numbers(board):
+    new_board = board
+
+    for y in range(9):
+        count = 0
+        for x in range(9):
+            if random.randint(-1, 1) >= 0:
+                new_board[y][x] = 0
+                count += 1
+                x += count
+            
+            if count > 5:
+                break
+
+    return new_board
