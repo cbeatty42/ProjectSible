@@ -32,24 +32,26 @@ def place_number(grid, row, column):
     return False # If we could not place any number, return false
 
 def generate_completed_sudoku_board():
-    # Create a 9x9 list populated with None
-    board = [[None for _ in range(9)] for _ in range(9)]
+    # Create a 9x9 list populated with 0
+    board = [[0 for _ in range(9)] for _ in range(9)]
     place_number(board, 0, 0)
     return board
 
-# Accepts a board and returns a duplicate board with values missing
-def remove_numbers(board):
-    new_board = board
+# Needs changed to go through every box (remove a roughly even amount from every box equal to avg_hint_count)
+def leave_hints(grid, avg_hints_per_box):
+    avg_hints_per_box = min(max(0, avg_hints_per_box), 9) # keep within range of # of cells in a grid
+    # Calculate the starting column and row of the 3x3 box containing the given cell
+    for start_row in range(0, 9, 3):
+        for start_column in range(0, 9, 3):
+            # Loop through the 3x3 box containing the cell
+            for i in range(start_row, start_row + 3):
+                for j in range(start_column, start_column + 3):
+                    n = random.randint(0, 9)
+                    should_clear =  n > avg_hints_per_box
+                    if should_clear:
+                       grid[i][j] = 0
 
-    for y in range(9):
-        count = 0
-        for x in range(9):
-            if random.randint(-1, 1) >= 0:
-                new_board[y][x] = 0
-                count += 1
-                x += count
-            
-            if count > 5:
-                break
-
-    return new_board
+def generate_sudoku_board(avg_hints_per_box):
+    board = generate_completed_sudoku_board()
+    leave_hints(board, avg_hints_per_box)
+    return board
