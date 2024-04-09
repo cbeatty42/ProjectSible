@@ -250,12 +250,16 @@ def redraw_window(win, board, time, strikes, colors):
     win.blit(text, (20, 560))
     # Draw grid and board
     board.draw(win, colors)
+    # Help text
+    fnt = pygame.font.SysFont("timesnewroman", 20)
+    text = fnt.render("n=NightMode", 1, colors["text"])
+    win.blit(text, (5, win.get_height() - 25))
 
 
 
 def main():
     colors = DAY_MODE_COLORS
-    win = pygame.display.set_mode((540, 600), pygame.RESIZABLE)
+    win = pygame.display.set_mode((580, 600))
     pygame.display.set_caption("Project Sible")
     board = Grid(9, 9, 540, 540)
     key = None
@@ -301,7 +305,7 @@ def main():
                             print("Success")
                         else:
                             print("Wrong")
-                            strikes += 1
+                            #strikes += 1
                         key = None
 
                         if board.is_finished():
