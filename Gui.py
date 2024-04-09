@@ -2,6 +2,47 @@ import pygame
 import time
 pygame.font.init()
 
+# Define color schemes
+DAY_MODE_COLORS = {
+    "background": (255, 255, 255),
+    "grid_lines": (0, 0, 0),
+    "text": (0, 0, 0),
+    "selected": (255, 0, 0),
+    "cube_text": (0, 0, 0),
+    "cube_temp_text": (50, 50, 255)
+}
+
+NIGHT_MODE_COLORS = {
+    "background": (0, 0, 0),
+    "grid_lines": (255, 255, 255),
+    "text": (255, 255, 255),
+    "selected": (255, 0, 0),
+    "cube_text": (255, 255, 255),
+    "cube_temp_text": (100, 100, 255)
+}
+
+def toggle_night_mode(win, board, time, strikes, night_mode):
+    global DAY_MODE_COLORS, NIGHT_MODE_COLORS
+    if night_mode:
+        # Switch to day mode
+        colors = DAY_MODE_COLORS
+    else:
+        # Switch to night mode
+        colors = NIGHT_MODE_COLORS
+
+    # Update colors in the board and redraw
+    win.fill(colors["background"])
+    board.draw(win, colors)
+    redraw_window(win, board, time, strikes, colors)
+    pygame.display.update()
+
+    return not night_mode # Return the new mode
+
+def display_game_over(win, colors):
+    font = pygame.font.SysFont("timesnewroman", 40)
+    game_over_text = font.render('GAME OVER', True, colors["text"])
+    win.blit(game_over_text, (win.get_width() // 2 - game_over_text.get_width() // 2, win.get_height() // 2 - game_over_text.get_height() // 2))
+    pygame.display.update()
 
 class Grid:
     board = [
@@ -46,7 +87,7 @@ class Grid:
         row, col = self.selected
         self.cubes[row][col].set_temp(val)
 
-    def draw(self, win):
+    def draw(self, win, colors):
         # Draw Grid Lines
         gap = self.width / 9
         for i in range(self.rows + 1):
@@ -54,13 +95,13 @@ class Grid:
                 thick = 4
             else:
                 thick = 1
-            pygame.draw.line(win, (0, 0, 0), (0, i * gap), (self.width, i * gap), thick)
-            pygame.draw.line(win, (0, 0, 0), (i * gap, 0), (i * gap, self.height), thick)
+            pygame.draw.line(win, colors["grid_lines"], (0, i * gap), (self.width, i * gap), thick)
+            pygame.draw.line(win, colors["grid_lines"], (i * gap, 0), (i * gap, self.height), thick)
 
         # Draw Cubes
         for i in range(self.rows):
             for j in range(self.cols):
-                self.cubes[i][j].draw(win)
+                self.cubes[i][j].draw(win, colors)
 
     def select(self, row, col):
         # Reset all other
@@ -110,7 +151,7 @@ class Cube:
         self.height = height
         self.selected = False
 
-    def draw(self, win):
+    def draw(self, win, colors):
         fnt = pygame.font.SysFont("timesnewroman", 40)
 
         gap = self.width / 9
@@ -118,14 +159,14 @@ class Cube:
         y = self.row * gap
 
         if self.temp != 0 and self.value == 0:
-            text = fnt.render(str(self.temp), 1, (128, 128, 128))
+            text = fnt.render(str(self.temp), 1, colors["cube_temp_text"])
             win.blit(text, (x + 5, y + 5))
         elif self.value != 0:
-            text = fnt.render(str(self.value), 1, (0, 0, 0))
+            text = fnt.render(str(self.value), 1, colors["cube_text"])
             win.blit(text, (x + (gap / 2 - text.get_width() / 2), y + (gap / 2 - text.get_height() / 2)))
 
         if self.selected:
-            pygame.draw.rect(win, (255, 0, 0), (x, y, gap, gap), 3)
+            pygame.draw.rect(win, colors["selected"], (x, y, gap, gap), 3)
 
     def set(self, val):
         self.value = val
@@ -196,20 +237,22 @@ def format_time(secs):
     return mat
 
 
-def redraw_window(win, board, time, strikes):
-    win.fill((255, 255, 255))
+def redraw_window(win, board, time, strikes, colors):
+    win.fill(colors["background"])
     # Draw time
     fnt = pygame.font.SysFont("timesnewroman", 40)
-    text = fnt.render("Time: " + format_time(time), 1, (0, 0, 0))
+    text = fnt.render("Time: " + format_time(time), 1, colors["text"])
     win.blit(text, (540 - 160, 560))
     # Draw Strikes
-    text = fnt.render("X " * strikes, 1, (255, 0, 0))
+    text = fnt.render("X " * strikes, 1, colors["text"])
     win.blit(text, (20, 560))
     # Draw grid and board
-    board.draw(win)
+    board.draw(win, colors)
+
 
 
 def main():
+    colors = DAY_MODE_COLORS
     win = pygame.display.set_mode((540, 600), pygame.RESIZABLE)
     pygame.display.set_caption("Project Sible")
     board = Grid(9, 9, 540, 540)
@@ -217,10 +260,8 @@ def main():
     run = True
     start = time.time()
     strikes = 0
+    night_mode=False
 
-    # Night mode button
-    night_mode_button = pygame.Rect(60, 540, 100, 50)
-    night_mode = False
 
     while run:
 
@@ -264,14 +305,20 @@ def main():
                         if board.is_finished():
                             print("Game over")
                             run = False
+                            display_game_over(win, colors)
+                            time.sleep(3) # Pause for 3 seconds before closing the window
+
+                if event.key == pygame.K_n:
+                    night_mode = toggle_night_mode(win, board, play_time, strikes, night_mode)
+                    if night_mode:
+                        colors = NIGHT_MODE_COLORS
+                    else:
+                        colors = DAY_MODE_COLORS
+                    redraw_window(win, board, play_time, strikes, colors)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 clicked = board.click(pos)
-
-                # Check if the night mode button is clicked
-                if night_mode_button.collidepoint(pos):
-                    night_mode = not night_mode
 
                 if clicked:
                     board.select(clicked[0], clicked[1])
@@ -279,20 +326,9 @@ def main():
 
         if board.selected and key is not None:
             board.sketch(key)
+  
 
-        # Apply night mode
-        if night_mode:
-            win.fill((30, 30, 30))
-        else:
-            win.fill((255, 255, 255))
-
-        redraw_window(win, board, play_time, strikes)
-
-        # Draw night mode button
-        if night_mode:
-            pygame.draw.rect(win, (180, 180, 180), night_mode_button)
-        else:
-            pygame.draw.rect(win, (100, 100, 100), night_mode_button)
+        redraw_window(win, board, play_time, strikes, colors)
 
         pygame.display.update()
 
