@@ -7,6 +7,7 @@ pygame.font.init()
 DAY_MODE_COLORS = {
     "background": (255, 255, 255),
     "grid_lines": (0, 0, 0),
+    "super_text": (255,0,0),
     "text": (0, 0, 0),
     "selected": (255, 0, 0),
     "cube_text": (0, 0, 0),
@@ -16,6 +17,7 @@ DAY_MODE_COLORS = {
 NIGHT_MODE_COLORS = {
     "background": (0, 0, 0),
     "grid_lines": (255, 255, 255),
+    "super_text": (255,0,0),
     "text": (255, 255, 255),
     "selected": (255, 0, 0),
     "cube_text": (255, 255, 255),
@@ -41,9 +43,10 @@ def toggle_night_mode(win, board, time, strikes, night_mode):
 
 def display_game_over(win, colors):
     font = pygame.font.SysFont("timesnewroman", 40)
-    game_over_text = font.render('GAME OVER', True, colors["text"])
+    game_over_text = font.render('GAME OVER', True, colors["super_text"])
     win.blit(game_over_text, (win.get_width() // 2 - game_over_text.get_width() // 2, win.get_height() // 2 - game_over_text.get_height() // 2))
     pygame.display.update()
+
 
 class Grid:
     board = [
@@ -252,14 +255,16 @@ def redraw_window(win, board, time, strikes, colors):
     board.draw(win, colors)
     # Help text
     fnt = pygame.font.SysFont("timesnewroman", 20)
-    text = fnt.render("n=NightMode", 1, colors["text"])
-    win.blit(text, (5, win.get_height() - 25))
+    text = fnt.render("n=Night Mode", 1, colors["text"])
+    win.blit(text, (5, win.get_height() - win.get_height()/6))
+    text=fnt.render("r=Refresh Board",1,colors["text"])
+    win.blit(text, (5, win.get_height()-win.get_height()/7))
 
 
 
 def main():
     colors = DAY_MODE_COLORS
-    win = pygame.display.set_mode((580, 600))
+    win = pygame.display.set_mode((580, 600),pygame.RESIZABLE)
     pygame.display.set_caption("Project Sible")
     board = Grid(9, 9, 540, 540)
     key = None
@@ -321,6 +326,13 @@ def main():
                     else:
                         colors = DAY_MODE_COLORS
                     redraw_window(win, board, play_time, strikes, colors)
+
+                if event.key==pygame.K_r:
+                    board = Grid(9, 9, 540, 540)
+                    key = None
+                    run = True
+                    start = time.time()
+                    strikes = 0
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
