@@ -42,6 +42,7 @@ def toggle_night_mode(win, board, time, strikes, night_mode):
     return not night_mode # Return the new mode
 
 def display_game_over(win, colors):
+    win.fill(colors["background"])
     font = pygame.font.SysFont("timesnewroman", 40)
     game_over_text = font.render('GAME OVER', True, colors["super_text"])
     win.blit(game_over_text, (win.get_width() // 2 - game_over_text.get_width() // 2, win.get_height() // 2 - game_over_text.get_height() // 2))
@@ -49,6 +50,7 @@ def display_game_over(win, colors):
 
 
 class Grid:
+    #default board
     board = [
         [5, 3, 0, 0, 7, 0, 0, 0, 0],
         [6, 0, 0, 1, 9, 5, 0, 0, 0],
@@ -61,10 +63,11 @@ class Grid:
         [0, 0, 0, 0, 8, 0, 0, 7, 9]
     ]
 
-    def __init__(self, rows, cols, width, height):
+    def __init__(self, win, rows, cols, width, height):
+        self.win=win
         self.rows = rows
         self.cols = cols
-        self.board = remove_numbers(generate_completed_sudoku_board())
+        self.board = generate_sudoku_board(3)
         self.cubes = [[Cube(self.board[i][j], i, j, width, height) for j in range(cols)] for i in range(rows)]
         self.width = width
         self.height = height
@@ -93,20 +96,29 @@ class Grid:
         self.cubes[row][col].set_temp(val)
 
     def draw(self, win, colors):
+        # Calculate the size of each cube and the gap as a percentage of the window's size
+        cube_size = min(win.get_width(), win.get_height()) * 0.1 # Adjust the 0.1 value to change the size of the grid
+        gap = cube_size // 10 # Adjust the gap as needed
+
+        # Calculate the starting position to center the grid
+        start_x = (win.get_width() - (9 * cube_size + 8 * gap)) // 2
+        start_y = (win.get_height() - (9 * cube_size + 8 * gap)) // 2
+
         # Draw Grid Lines
-        gap = self.width / 9
         for i in range(self.rows + 1):
-            if i % 3 == 0 and i != 0:
+            if i % 3== 0: #and i != 0:
                 thick = 4
             else:
                 thick = 1
-            pygame.draw.line(win, colors["grid_lines"], (0, i * gap), (self.width, i * gap), thick)
-            pygame.draw.line(win, colors["grid_lines"], (i * gap, 0), (i * gap, self.height), thick)
+            pygame.draw.line(win, colors["grid_lines"], (start_x, start_y + i * (cube_size + gap)), (start_x + 9 * (cube_size + gap), start_y + i * (cube_size + gap)), thick)
+            pygame.draw.line(win, colors["grid_lines"], (start_x + i * (cube_size + gap), start_y), (start_x + i * (cube_size + gap), start_y + 9 * (cube_size + gap)), thick)
 
         # Draw Cubes
         for i in range(self.rows):
             for j in range(self.cols):
-                self.cubes[i][j].draw(win, colors)
+                x = start_x + j * (cube_size + gap)
+                y = start_y + i * (cube_size + gap)
+                self.cubes[i][j].draw(win, colors, x, y, cube_size)
 
     def select(self, row, col):
         # Reset all other
@@ -127,14 +139,22 @@ class Grid:
         :param: pos
         :return: (row, col)
         """
-        if pos[0] < self.width and pos[1] < self.height:
-            gap = self.width / 9
-            x = pos[0] // gap
-            y = pos[1] // gap
-            return int(y), int(x)
-        else:
+        # Calculate the size of each cube and the gap as a percentage of the window's size
+        cube_size = min(self.win.get_width(), self.win.get_height()) * 0.1 # Adjust the 0.1 value to change the size of the grid
+        gap = cube_size // 10 # Adjust the gap as needed
+
+        # Calculate the starting position to center the grid
+        start_x = (self.win.get_width() - (9 * cube_size + 8 * gap)) // 2
+        start_y = (self.win.get_height() - (9 * cube_size + 8 * gap)) // 2
+
+        if pos[0] < start_x or pos[0] > start_x + 9 * (cube_size + gap) or pos[1] < start_y or pos[1] > start_y + 9 * (cube_size + gap):
             return None
 
+        gap = cube_size // 10 # Adjust the gap as needed
+        x = (pos[0] - start_x) // (cube_size + gap)
+        y = (pos[1] - start_y) // (cube_size + gap)
+        return int(y), int(x)
+    
     def is_finished(self):
         for i in range(self.rows):
             for j in range(self.cols):
@@ -156,22 +176,18 @@ class Cube:
         self.height = height
         self.selected = False
 
-    def draw(self, win, colors):
-        fnt = pygame.font.SysFont("timesnewroman", 40)
+    def draw(self, win, colors, x, y, size):
+            fnt = pygame.font.SysFont("timesnewroman", 40)
 
-        gap = self.width / 9
-        x = self.col * gap
-        y = self.row * gap
+            if self.temp != 0 and self.value == 0:
+                text = fnt.render(str(self.temp), 1, colors["cube_temp_text"])
+                win.blit(text, (x + 5, y + 5))
+            elif self.value != 0:
+                text = fnt.render(str(self.value), 1, colors["cube_text"])
+                win.blit(text, (x + (size / 2 - text.get_width() / 2), y + (size / 2 - text.get_height() / 2)))
 
-        if self.temp != 0 and self.value == 0:
-            text = fnt.render(str(self.temp), 1, colors["cube_temp_text"])
-            win.blit(text, (x + 5, y + 5))
-        elif self.value != 0:
-            text = fnt.render(str(self.value), 1, colors["cube_text"])
-            win.blit(text, (x + (gap / 2 - text.get_width() / 2), y + (gap / 2 - text.get_height() / 2)))
-
-        if self.selected:
-            pygame.draw.rect(win, colors["selected"], (x, y, gap, gap), 3)
+            if self.selected:
+                pygame.draw.rect(win, colors["selected"], (x, y, size, size), 3)
 
     def set(self, val):
         self.value = val
@@ -247,26 +263,58 @@ def redraw_window(win, board, time, strikes, colors):
     # Draw time
     fnt = pygame.font.SysFont("timesnewroman", 40)
     text = fnt.render("Time: " + format_time(time), 1, colors["text"])
-    win.blit(text, (540 - 160, 560))
-    # Draw Strikes
+    text_rect = text.get_rect()
+    text_rect.topright = (win.get_width() - 30, 20) # Position at the top right, adjust as needed
+    win.blit(text, text_rect)
+    # Draw Strikes (Code may not be used)
+
     text = fnt.render("X " * strikes, 1, colors["text"])
-    win.blit(text, (20, 560))
+    text_rect = text.get_rect()
+    text_rect.left = 20 # Adjust as needed
+    text_rect.bottom = win.get_height() - 20 # Position at the bottom, adjust as needed
+    win.blit(text, text_rect)
     # Draw grid and board
     board.draw(win, colors)
+
     # Help text
+    # Calculate the size of each cube and the gap as a percentage of the window's size
+    cube_size = min(win.get_width(), win.get_height()) * 0.1 # Adjust the 0.1 value to change the size of the grid
+    gap = cube_size // 10 # Adjust the gap as needed
+
+    # Calculate the starting position to center the grid
+    start_x = (win.get_width() - (9 * cube_size + 8 * gap)) // 2
+    start_y = (win.get_height() - (9 * cube_size + 8 * gap)) // 2
+
+    # Calculate the rectangle position to be to the left of the grid
+    rect_x = start_x - 200 # Adjust as needed to ensure it's to the left of the grid
+    rect_y = start_y # Position it at the same y as the grid
+    rect_width = 160
+    rect_height = 240
+
+    pygame.draw.rect(win, colors["grid_lines"], pygame.Rect(rect_x, rect_y, rect_width, rect_height), 2)
+
+    # Render and position the "n=Night Mode" text
     fnt = pygame.font.SysFont("timesnewroman", 20)
     text = fnt.render("n=Night Mode", 1, colors["text"])
-    win.blit(text, (5, win.get_height() - win.get_height()/6))
-    text=fnt.render("r=Refresh Board",1,colors["text"])
-    win.blit(text, (5, win.get_height()-win.get_height()/7))
+    text_rect = text.get_rect()
+    text_rect.left = rect_x + 5 # Adjust as needed
+    text_rect.top = rect_y + 5 # Adjust as needed
+    win.blit(text, text_rect)
+
+    # Render and position the "r=Refresh Board" text
+    text = fnt.render("r=Refresh Board", 1, colors["text"])
+    text_rect = text.get_rect()
+    text_rect.left = rect_x + 5 # Adjust as needed
+    text_rect.top = rect_y + 30 # Adjust as needed
+    win.blit(text, text_rect)
 
 
 
 def main():
     colors = DAY_MODE_COLORS
-    win = pygame.display.set_mode((580, 600),pygame.RESIZABLE)
+    win = pygame.display.set_mode((0, 0),pygame.RESIZABLE)
     pygame.display.set_caption("Project Sible")
-    board = Grid(9, 9, 540, 540)
+    board = Grid(win,9, 9, 540, 540)
     key = None
     run = True
     start = time.time()
@@ -300,6 +348,8 @@ def main():
                     key = 8
                 if event.key == pygame.K_9:
                     key = 9
+                if event.key == pygame.K_BACKSPACE:
+                    key=0
                 if event.key == pygame.K_DELETE:
                     board.clear()
                     key = None
@@ -318,7 +368,7 @@ def main():
                             run = False
                             display_game_over(win, colors)
                             time.sleep(3) # Pause for 3 seconds before closing the window
-
+                #use n key to set night mode
                 if event.key == pygame.K_n:
                     night_mode = toggle_night_mode(win, board, play_time, strikes, night_mode)
                     if night_mode:
@@ -326,13 +376,19 @@ def main():
                     else:
                         colors = DAY_MODE_COLORS
                     redraw_window(win, board, play_time, strikes, colors)
-
+                #use r key to reset board and time.
                 if event.key==pygame.K_r:
-                    board = Grid(9, 9, 540, 540)
+                    board = Grid(win,9, 9, 540, 540)
                     key = None
                     run = True
                     start = time.time()
                     strikes = 0
+                #use esc key to force quit game
+                if event.key==pygame.K_ESCAPE:
+                    run=False
+                #use h key to display command menu
+                #if event.key==pygame.K_h:
+
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
