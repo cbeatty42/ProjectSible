@@ -1,6 +1,7 @@
 import pygame
 import time
 from BoardGenerator import *
+from Utils import *
 pygame.font.init()
 
 # Define color schemes
@@ -67,7 +68,12 @@ class Grid:
         self.win=win
         self.rows = rows
         self.cols = cols
-        self.board = generate_sudoku_board(3)
+        self.board = load("board.json")
+
+        if not self.board:
+            self.board = generate_sudoku_board(3)
+            save("board.json", self.board)
+
         self.cubes = [[Cube(self.board[i][j], i, j, width, height) for j in range(cols)] for i in range(rows)]
         self.width = width
         self.height = height
@@ -84,6 +90,7 @@ class Grid:
             self.update_model()
 
             if valid(self.model, val, (row, col)) and solve(self.model):
+                self.board[row][col] = val
                 return True
             else:
                 self.cubes[row][col].set(0)
@@ -321,7 +328,6 @@ def main():
     strikes = 0
     night_mode=False
 
-
     while run:
 
         play_time = round(time.time() - start)
@@ -406,6 +412,7 @@ def main():
 
         pygame.display.update()
 
+    save("board.json", board.board)
 
 main()
 pygame.quit()
