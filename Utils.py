@@ -3,16 +3,20 @@ import json
 # Accepts a path
 # Returns a dictionary
 def load(path):
-    f = open(path, "r")
-    data = json.load(f)
-    f.close()
-    return data
+    try:
+        f = open(path, "r")
+        data = json.load(f)
+        f.close()
+        return data
+    except:
+        return []
 
 # Save file
 # Accepts a path and dictionary
 def save(path, data):
     with open(path, "w") as file:
         json.dump(data, file)
+        file.close()
 
 # Is in row
 # Accepts 2 dimensional array and row number
