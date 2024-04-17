@@ -107,9 +107,9 @@ class Grid:
         # Draw Grid Lines
         for i in range(self.rows + 1):
             if i % 3== 0: #and i != 0:
-                thick = 4
+                thick = 5
             else:
-                thick = 1
+                thick = 3
             pygame.draw.line(win, colors["grid_lines"], (start_x, start_y + i * (cube_size + gap)), (start_x + 9 * (cube_size + gap), start_y + i * (cube_size + gap)), thick)
             pygame.draw.line(win, colors["grid_lines"], (start_x + i * (cube_size + gap), start_y), (start_x + i * (cube_size + gap), start_y + 9 * (cube_size + gap)), thick)
 
