@@ -64,13 +64,15 @@ class Grid:
         [0, 0, 0, 0, 8, 0, 0, 7, 9]
     ]
 
-    def __init__(self, win, rows, cols, width, height):
+    def __init__(self, win, rows, cols, width, height, loadFile):
         self.win=win
         self.rows = rows
         self.cols = cols
-        self.board = load("board.json")
+        self.loadFile=loadFile 
 
-        if not self.board:
+        if loadFile:
+            self.board = load("board.json")
+        else:
             self.board = generate_sudoku_board(3)
             save("board.json", self.board)
 
@@ -321,9 +323,10 @@ def main():
     colors = DAY_MODE_COLORS
     win = pygame.display.set_mode((0, 0),pygame.RESIZABLE)
     pygame.display.set_caption("Project Sible")
-    board = Grid(win,9, 9, 540, 540)
+    board = Grid(win,9, 9, 540, 540, True)
     key = None
     run = True
+    
     start = time.time()
     strikes = 0
     night_mode=False
@@ -384,16 +387,14 @@ def main():
                     redraw_window(win, board, play_time, strikes, colors)
                 #use r key to reset board and time.
                 if event.key==pygame.K_r:
-                    board = Grid(win,9, 9, 540, 540)
+                    board = Grid(win,9, 9, 540, 540, False)
                     key = None
-                    run = True
                     start = time.time()
                     strikes = 0
+
                 #use esc key to force quit game
                 if event.key==pygame.K_ESCAPE:
                     run=False
-                #use h key to display command menu
-                #if event.key==pygame.K_h:
 
 
             if event.type == pygame.MOUSEBUTTONDOWN:
