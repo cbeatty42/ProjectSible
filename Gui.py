@@ -50,6 +50,7 @@ def display_game_over(win, colors):
     pygame.display.update()
 
 
+
 class Grid:
     #default board
     board = [
@@ -64,7 +65,7 @@ class Grid:
         [0, 0, 0, 0, 8, 0, 0, 7, 9]
     ]
 
-    def __init__(self, win, rows, cols, width, height, loadFile):
+    def __init__(self, win, rows, cols, width, height, loadFile, difficulty):
         self.win=win
         self.rows = rows
         self.cols = cols
@@ -73,7 +74,7 @@ class Grid:
         if loadFile:
             self.board = load("board.json")
         else:
-            self.board = generate_sudoku_board(3)
+            self.board = generate_sudoku_board(difficulty)
             save("board.json", self.board)
 
         self.cubes = [[Cube(self.board[i][j], i, j, width, height) for j in range(cols)] for i in range(rows)]
@@ -304,18 +305,26 @@ def redraw_window(win, board, time, strikes, colors):
 
     # Render and position the "n=Night Mode" text
     fnt = pygame.font.SysFont("timesnewroman", 20)
-    text = fnt.render("n=Night Mode", 1, colors["text"])
-    text_rect = text.get_rect()
-    text_rect.left = rect_x + 5 # Adjust as needed
-    text_rect.top = rect_y + 5 # Adjust as needed
-    win.blit(text, text_rect)
+    
+    options = [
+        ("n = Night Mode", 5),
+        ("r = Refresh Board", 30),
+        ("--------------------",42),
+        ("difficulty settings",55),
+        ("--------------------",67),
+        ("v = very easy", 80),
+        ("e = easy", 105),
+        ("m = medium", 130),
+        ("h = hard", 155)
 
-    # Render and position the "r=Refresh Board" text
-    text = fnt.render("r=Refresh Board", 1, colors["text"])
-    text_rect = text.get_rect()
-    text_rect.left = rect_x + 5 # Adjust as needed
-    text_rect.top = rect_y + 30 # Adjust as needed
-    win.blit(text, text_rect)
+    ]
+
+    for option_text, offset in options:
+        text = fnt.render(option_text, 1, colors["text"])
+        text_rect = text.get_rect()
+        text_rect.left = rect_x + 5
+        text_rect.top = rect_y + offset
+        win.blit(text, text_rect)
 
 
 
@@ -323,7 +332,8 @@ def main():
     colors = DAY_MODE_COLORS
     win = pygame.display.set_mode((0, 0),pygame.RESIZABLE)
     pygame.display.set_caption("Project Sible")
-    board = Grid(win,9, 9, 540, 540, True)
+    difficulty=3
+    board = Grid(win,9, 9, 540, 540, True, difficulty)
     key = None
     run = True
     
@@ -387,11 +397,52 @@ def main():
                     redraw_window(win, board, play_time, strikes, colors)
                 #use r key to reset board and time.
                 if event.key==pygame.K_r:
-                    board = Grid(win,9, 9, 540, 540, False)
+                    board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
                     start = time.time()
                     strikes = 0
-
+                #various keys are used to set the difficulty
+                if event.key==pygame.K_h:
+                    difficulty=2
+                if event.key==pygame.K_m:
+                    difficulty=3
+                if event.key==pygame.K_e:
+                    difficulty=4
+                if event.key==pygame.K_v:
+                    difficulty=5
+                #arrow keys used to move around
+                if event.key == pygame.K_LEFT:
+                    if board.selected:
+                        row, col = board.selected
+                        key=None
+                        if col > 0:
+                            board.select(row, col - 1)
+                    else:
+                        board.select(4,3)
+                if event.key == pygame.K_RIGHT:
+                    if board.selected:
+                        row, col = board.selected
+                        key=None
+                        if col < 8:
+                            board.select(row, col + 1)
+                    else:
+                        board.select(4,5)
+                if event.key == pygame.K_UP:
+                    if board.selected:
+                        row, col = board.selected
+                        key=None
+                        if row > 0:
+                            board.select(row - 1, col)
+                    else:
+                        board.select(3,4)
+                if event.key == pygame.K_DOWN:
+                    if board.selected:
+                        row, col = board.selected
+                        key=None
+                        if row < 8:
+                            board.select(row + 1, col)
+                    else:
+                        board.select(5,4)
                 #use esc key to force quit game
                 if event.key==pygame.K_ESCAPE:
                     run=False
