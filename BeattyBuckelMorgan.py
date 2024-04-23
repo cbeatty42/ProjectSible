@@ -1,7 +1,7 @@
 from Gui import *
 
 def main():
-    colors = DAY_MODE_COLORS
+    colors = NIGHT_MODE_COLORS
     win = pygame.display.set_mode((0, 0),pygame.RESIZABLE)
     pygame.display.set_caption("Project Sible")
     difficulty=3
@@ -11,7 +11,7 @@ def main():
     
     start = time.time()
     strikes = 0
-    night_mode=False
+    night_mode = True
 
     while run:
 
