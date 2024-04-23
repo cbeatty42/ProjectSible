@@ -408,7 +408,16 @@ def main():
                 if event.key==pygame.K_e and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL):
                     difficulty=4
                 if event.key==pygame.K_v and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL):
+                    board = Grid(win,9, 9, 540, 540, False, difficulty)
+                if event.key==pygame.K_m:
+                    difficulty=3
+                    board = Grid(win,9, 9, 540, 540, False, difficulty)
+                if event.key==pygame.K_e:
+                    difficulty=4
+                    board = Grid(win,9, 9, 540, 540, False, difficulty)
+                if event.key==pygame.K_v:
                     difficulty=5
+                    board = Grid(win,9, 9, 540, 540, False, difficulty)
                 #arrow keys used to move around
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     if board.selected:
