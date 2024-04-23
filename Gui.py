@@ -297,7 +297,7 @@ def redraw_window(win, board, time, strikes, colors):
     # Calculate the rectangle position to be to the left of the grid
     rect_x = start_x - 200 # Adjust as needed to ensure it's to the left of the grid
     rect_y = start_y # Position it at the same y as the grid
-    rect_width = 160
+    rect_width = 185
     rect_height = 240
 
     pygame.draw.rect(win, colors["grid_lines"], pygame.Rect(rect_x, rect_y, rect_width, rect_height), 2)
@@ -307,14 +307,14 @@ def redraw_window(win, board, time, strikes, colors):
 
     options = [
         ("n = Night Mode", 5),
-        ("CTRL+r = Refresh Board", 30),
+        ("CTRL+r = Refresh", 30),
         ("--------------------",42),
         ("difficulty settings",55),
         ("--------------------",67),
-        ("CTRL+v = very easy", 80),
-        ("CTRL+e = easy", 105),
-        ("CTRL+m = medium", 130),
-        ("CTRL+h = hard", 155)
+        ("CTRL+v = Very Easy", 80),
+        ("CTRL+e = Easy", 105),
+        ("CTRL+m = Medium", 130),
+        ("CTRL+h = Hard", 155)
 
     ]
 
@@ -338,7 +338,7 @@ def main():
     
     start = time.time()
     strikes = 0
-    night_mode=False
+    night_mode = False
 
     while run:
 
