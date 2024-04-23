@@ -77,15 +77,27 @@ def main():
                 if event.key==pygame.K_h and (event.mod & pygame.KMOD_CTRL):
                     difficulty=2
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
+                    key = None
+                    start = time.time()
+                    strikes = 0
                 if event.key==pygame.K_m and (event.mod & pygame.KMOD_CTRL):
                     difficulty=3
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
+                    key = None
+                    start = time.time()
+                    strikes = 0
                 if event.key==pygame.K_e and (event.mod & pygame.KMOD_CTRL):
                     difficulty=4
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
+                    key = None
+                    start = time.time()
+                    strikes = 0
                 if event.key==pygame.K_v and (event.mod & pygame.KMOD_CTRL):
                     difficulty=5
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
+                    key = None
+                    start = time.time()
+                    strikes = 0
                 #arrow keys used to move around
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     if board.selected:
