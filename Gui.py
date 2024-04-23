@@ -395,22 +395,22 @@ def main():
                         colors = DAY_MODE_COLORS
                     redraw_window(win, board, play_time, strikes, colors)
                 #use r key to reset board and time.
-                if event.key==pygame.K_r and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL):
+                if event.key==pygame.K_r and (event.mod & pygame.KMOD_CTRL):
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
                     start = time.time()
                     strikes = 0
                 #various keys are used to set the difficulty
-                if event.key==pygame.K_h and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL) :
+                if event.key==pygame.K_h and (event.mod & pygame.KMOD_CTRL):
                     difficulty=2
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
-                if event.key==pygame.K_m and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL):
+                if event.key==pygame.K_m and (event.mod & pygame.KMOD_CTRL):
                     difficulty=3
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
-                if event.key==pygame.K_e and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL):
+                if event.key==pygame.K_e and (event.mod & pygame.KMOD_CTRL):
                     difficulty=4
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
-                if event.key==pygame.K_v and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL):
+                if event.key==pygame.K_v and (event.mod & pygame.KMOD_CTRL):
                     difficulty=5
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                 #arrow keys used to move around
