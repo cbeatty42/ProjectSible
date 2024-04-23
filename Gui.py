@@ -404,12 +404,16 @@ def main():
                 #various keys are used to set the difficulty
                 if event.key==pygame.K_h:
                     difficulty=2
+                    board = Grid(win,9, 9, 540, 540, False, difficulty)
                 if event.key==pygame.K_m:
                     difficulty=3
+                    board = Grid(win,9, 9, 540, 540, False, difficulty)
                 if event.key==pygame.K_e:
                     difficulty=4
+                    board = Grid(win,9, 9, 540, 540, False, difficulty)
                 if event.key==pygame.K_v:
                     difficulty=5
+                    board = Grid(win,9, 9, 540, 540, False, difficulty)
                 #arrow keys used to move around
                 if event.key == pygame.K_LEFT:
                     if board.selected:
