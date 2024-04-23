@@ -50,7 +50,6 @@ def display_game_over(win, colors):
     pygame.display.update()
 
 
-
 class Grid:
     #default board
     board = [
@@ -305,17 +304,17 @@ def redraw_window(win, board, time, strikes, colors):
 
     # Render and position the "n=Night Mode" text
     fnt = pygame.font.SysFont("timesnewroman", 20)
-    
+
     options = [
         ("n = Night Mode", 5),
-        ("r = Refresh Board", 30),
+        ("CTRL+r = Refresh Board", 30),
         ("--------------------",42),
         ("difficulty settings",55),
         ("--------------------",67),
-        ("v = very easy", 80),
-        ("e = easy", 105),
-        ("m = medium", 130),
-        ("h = hard", 155)
+        ("CTRL+v = very easy", 80),
+        ("CTRL+e = easy", 105),
+        ("CTRL+m = medium", 130),
+        ("CTRL+h = hard", 155)
 
     ]
 
@@ -396,22 +395,22 @@ def main():
                         colors = DAY_MODE_COLORS
                     redraw_window(win, board, play_time, strikes, colors)
                 #use r key to reset board and time.
-                if event.key==pygame.K_r:
+                if event.key==pygame.K_r and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL):
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
                     start = time.time()
                     strikes = 0
                 #various keys are used to set the difficulty
-                if event.key==pygame.K_h:
+                if event.key==pygame.K_h and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL) :
                     difficulty=2
-                if event.key==pygame.K_m:
+                if event.key==pygame.K_m and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL):
                     difficulty=3
-                if event.key==pygame.K_e:
+                if event.key==pygame.K_e and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL):
                     difficulty=4
-                if event.key==pygame.K_v:
+                if event.key==pygame.K_v and (event.key == pygame.K_RCTRL or event.key == pygame.K_LCTRL):
                     difficulty=5
                 #arrow keys used to move around
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     if board.selected:
                         row, col = board.selected
                         key=None
@@ -419,7 +418,7 @@ def main():
                             board.select(row, col - 1)
                     else:
                         board.select(4,3)
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     if board.selected:
                         row, col = board.selected
                         key=None
@@ -427,7 +426,7 @@ def main():
                             board.select(row, col + 1)
                     else:
                         board.select(4,5)
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
                     if board.selected:
                         row, col = board.selected
                         key=None
@@ -435,7 +434,7 @@ def main():
                             board.select(row - 1, col)
                     else:
                         board.select(3,4)
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     if board.selected:
                         row, col = board.selected
                         key=None
