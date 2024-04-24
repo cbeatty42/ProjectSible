@@ -93,8 +93,8 @@ class Grid:
 
     def draw(self, win, colors):
         # Calculate the size of each cube and the gap as a percentage of the window's size
-        cube_size = min(win.get_width(), win.get_height()) * 0.1 # Adjust the 0.1 value to change the size of the grid
-        gap = cube_size // 10 # Adjust the gap as needed
+        cube_size = min(win.get_width(), win.get_height()) * 0.1 
+        gap = cube_size // 10 
 
         # Calculate the starting position to center the grid
         start_x = (win.get_width() - (9 * cube_size + 8 * gap)) // 2
@@ -138,8 +138,8 @@ class Grid:
         :return: (row, col)
         """
         # Calculate the size of each cube and the gap as a percentage of the window's size
-        cube_size = min(self.win.get_width(), self.win.get_height()) * 0.1 # Adjust the 0.1 value to change the size of the grid
-        gap = cube_size // 10 # Adjust the gap as needed
+        cube_size = min(self.win.get_width(), self.win.get_height()) * 0.1
+        gap = cube_size // 10 
 
         # Calculate the starting position to center the grid
         start_x = (self.win.get_width() - (9 * cube_size + 8 * gap)) // 2
@@ -148,7 +148,7 @@ class Grid:
         if pos[0] < start_x or pos[0] > start_x + 9 * (cube_size + gap) or pos[1] < start_y or pos[1] > start_y + 9 * (cube_size + gap):
             return None
 
-        gap = cube_size // 10 # Adjust the gap as needed
+        gap = cube_size // 10 
         x = (pos[0] - start_x) // (cube_size + gap)
         y = (pos[1] - start_y) // (cube_size + gap)
         return int(y), int(x)
@@ -263,29 +263,29 @@ def redraw_window(win, board, time, strikes, colors):
     fnt = pygame.font.SysFont("timesnewroman", 40)
     text = fnt.render("Time: " + format_time(time), 1, colors["text"])
     text_rect = text.get_rect()
-    text_rect.topright = (win.get_width() - 30, 20) # Position at the top right, adjust as needed
+    text_rect.topright = (win.get_width() - 30, 20) # Position at the top right
     win.blit(text, text_rect)
     # Draw Strikes (Code may not be used)
 
     text = fnt.render("X " * strikes, 1, colors["text"])
     text_rect = text.get_rect()
-    text_rect.left = 20 # Adjust as needed
-    text_rect.bottom = win.get_height() - 20 # Position at the bottom, adjust as needed
+    text_rect.left = 20 
+    text_rect.bottom = win.get_height() - 20 # Position at the bottom
     win.blit(text, text_rect)
     # Draw grid and board
     board.draw(win, colors)
 
     # Help text
     # Calculate the size of each cube and the gap as a percentage of the window's size
-    cube_size = min(win.get_width(), win.get_height()) * 0.1 # Adjust the 0.1 value to change the size of the grid
-    gap = cube_size // 10 # Adjust the gap as needed
+    cube_size = min(win.get_width(), win.get_height()) * 0.1 
+    gap = cube_size // 10 
 
     # Calculate the starting position to center the grid
     start_x = (win.get_width() - (9 * cube_size + 8 * gap)) // 2
     start_y = (win.get_height() - (9 * cube_size + 8 * gap)) // 2
 
     # Calculate the rectangle position to be to the left of the grid
-    rect_x = start_x - 200 # Adjust as needed to ensure it's to the left of the grid
+    rect_x = start_x - 200 
     rect_y = start_y # Position it at the same y as the grid
     rect_width = 185
     rect_height = 240
