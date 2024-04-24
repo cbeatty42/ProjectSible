@@ -152,7 +152,7 @@ def main():
 
         pygame.display.update()
 
-    save("board.json", board.board)
+    save("board.json", board.board, board.backupBoard)
 
 main()
 pygame.quit()

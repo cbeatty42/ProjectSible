@@ -58,10 +58,11 @@ class Grid:
         self.loadFile=loadFile 
 
         if loadFile:
-            self.board = load("board.json")
-        else:
-            self.board = generate_sudoku_board(difficulty)
-            save("board.json", self.board)
+            self.board, self.backupBoard = load("board.json")
+        
+        if not loadFile or self.board == None:
+            self.backupBoard = self.board = generate_sudoku_board(difficulty)
+            save("board.json", self.board, self.backupBoard)
 
         self.cubes = [[Cube(self.board[r][c], r, c, width, height) for c in range(cols)] for r in range(rows)]
         self.width = width
