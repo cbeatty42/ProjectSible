@@ -40,11 +40,11 @@ def main():
                 if event.key == pygame.K_9:
                     key = 9
                 if event.key == pygame.K_BACKSPACE:
-                    key=0
+                    key = 0
                 if event.key == pygame.K_DELETE:
                     board.clear()
                     key = None
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN: #if Enter is pressed
                     i, j = board.selected
                     if board.cubes[i][j].temp != 0:
                         if board.place(board.cubes[i][j].temp):

@@ -45,7 +45,7 @@ def toggle_night_mode(win, board, time, strikes, night_mode):
 def display_game_over(win, colors):
     win.fill(colors["background"])
     font = pygame.font.SysFont("timesnewroman", 40)
-    game_over_text = font.render('GAME OVER', True, colors["super_text"])
+    game_over_text = font.render('SUDOKU!!!', True, colors["super_text"])
     win.blit(game_over_text, (win.get_width() // 2 - game_over_text.get_width() // 2, win.get_height() // 2 - game_over_text.get_height() // 2))
     pygame.display.update()
 
@@ -117,17 +117,19 @@ class Grid:
         for i in range(self.rows + 1):
             if i % 3== 0: #and i != 0:
                 thick = 5
+                pygame.draw.line(win, colors["cube_temp_text"], (start_x, start_y + i * (cube_size + gap)), (start_x + 9 * (cube_size + gap), start_y + i * (cube_size + gap)), thick)
+                pygame.draw.line(win, colors["cube_temp_text"], (start_x + i * (cube_size + gap), start_y), (start_x + i * (cube_size + gap), start_y + 9 * (cube_size + gap)), thick)
             else:
                 thick = 3
-            pygame.draw.line(win, colors["grid_lines"], (start_x, start_y + i * (cube_size + gap)), (start_x + 9 * (cube_size + gap), start_y + i * (cube_size + gap)), thick)
-            pygame.draw.line(win, colors["grid_lines"], (start_x + i * (cube_size + gap), start_y), (start_x + i * (cube_size + gap), start_y + 9 * (cube_size + gap)), thick)
+                pygame.draw.line(win, colors["grid_lines"], (start_x, start_y + i * (cube_size + gap)), (start_x + 9 * (cube_size + gap), start_y + i * (cube_size + gap)), thick)
+                pygame.draw.line(win, colors["grid_lines"], (start_x + i * (cube_size + gap), start_y), (start_x + i * (cube_size + gap), start_y + 9 * (cube_size + gap)), thick)
 
         # Draw Cubes
         for i in range(self.rows):
             for j in range(self.cols):
                 x = start_x + j * (cube_size + gap)
                 y = start_y + i * (cube_size + gap)
-                self.cubes[i][j].draw(win, colors, x, y, cube_size)
+                self.cubes[i][j].draw(win, colors, x, y, cube_size, gap)
 
     def select(self, row, col):
         # Reset all other
@@ -185,7 +187,7 @@ class Cube:
         self.height = height
         self.selected = False
 
-    def draw(self, win, colors, x, y, size):
+    def draw(self, win, colors, x, y, size, gap):
             fnt = pygame.font.SysFont("timesnewroman", 40)
 
             if self.temp != 0 and self.value == 0:
@@ -196,7 +198,8 @@ class Cube:
                 win.blit(text, (x + (size / 2 - text.get_width() / 2), y + (size / 2 - text.get_height() / 2)))
 
             if self.selected:
-                pygame.draw.rect(win, colors["selected"], (x, y, size, size), 3)
+                #this draws the red rectangle 
+                pygame.draw.rect(win, colors["selected"], (x, y, size+gap, size+gap), 3)
 
     def set(self, val):
         self.value = val
