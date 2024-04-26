@@ -10,7 +10,7 @@ DAY_MODE_COLORS = {
     "grid_lines": (0, 0, 0),
     "super_text": (255,0,0),
     "text": (0, 0, 0),
-    "selected": (255, 0, 0),
+    "selected": (255, 0, 255),
     "cube_text": (0, 0, 0),
     "cube_temp_text": (50, 50, 255)
 }
@@ -20,7 +20,7 @@ NIGHT_MODE_COLORS = {
     "grid_lines": (255, 255, 255),
     "super_text": (255,0,0),
     "text": (255, 255, 255),
-    "selected": (255, 0, 0),
+    "selected": (255, 0, 255),
     "cube_text": (255, 255, 255),
     "cube_temp_text": (100, 100, 255)
 }
@@ -44,7 +44,7 @@ def toggle_night_mode(win, board, time, strikes, night_mode):
 
 def display_game_over(win, colors):
     win.fill(colors["background"])
-    font = pygame.font.SysFont("timesnewroman", 40)
+    font = pygame.font.SysFont("cambria", 40)
     game_over_text = font.render('SUDOKU!!!', True, colors["super_text"])
     win.blit(game_over_text, (win.get_width() // 2 - game_over_text.get_width() // 2, win.get_height() // 2 - game_over_text.get_height() // 2))
     pygame.display.update()
@@ -103,14 +103,15 @@ class Grid:
 
         # Draw Grid Lines
         for i in range(self.rows + 1):
-            if i % 3== 0: #and i != 0:
-                thick = 5
-                pygame.draw.line(win, colors["cube_temp_text"], (start_x, start_y + i * (cube_size + gap)), (start_x + 9 * (cube_size + gap), start_y + i * (cube_size + gap)), thick)
-                pygame.draw.line(win, colors["cube_temp_text"], (start_x + i * (cube_size + gap), start_y), (start_x + i * (cube_size + gap), start_y + 9 * (cube_size + gap)), thick)
-            else:
-                thick = 3
+            if i % 3 != 0:
+                thick = 6
                 pygame.draw.line(win, colors["grid_lines"], (start_x, start_y + i * (cube_size + gap)), (start_x + 9 * (cube_size + gap), start_y + i * (cube_size + gap)), thick)
                 pygame.draw.line(win, colors["grid_lines"], (start_x + i * (cube_size + gap), start_y), (start_x + i * (cube_size + gap), start_y + 9 * (cube_size + gap)), thick)
+        for i in range(self.rows + 1):   
+            if i % 3 == 0:
+                thick = 10
+                pygame.draw.line(win, colors["cube_temp_text"], (start_x, start_y + i * (cube_size + gap)), (start_x + 9 * (cube_size + gap), start_y + i * (cube_size + gap)), thick)
+                pygame.draw.line(win, colors["cube_temp_text"], (start_x + i * (cube_size + gap), start_y), (start_x + i * (cube_size + gap), start_y + 9 * (cube_size + gap)), thick)
 
         # Draw Cubes
         for i in range(self.rows):
@@ -176,7 +177,7 @@ class Cube:
         self.selected = False
 
     def draw(self, win, colors, x, y, size, gap):
-            fnt = pygame.font.SysFont("timesnewroman", 40)
+            fnt = pygame.font.SysFont("cambria", 60)
 
             if self.temp != 0 and self.value == 0:
                 text = fnt.render(str(self.temp), 1, colors["cube_temp_text"])
@@ -187,7 +188,7 @@ class Cube:
 
             if self.selected:
                 #this draws the red rectangle 
-                pygame.draw.rect(win, colors["selected"], (x, y, size+gap, size+gap), 3)
+                pygame.draw.rect(win, colors["selected"], (x, y, size+gap, size+gap), 7)
 
     def set(self, val):
         self.value = val
@@ -254,14 +255,17 @@ def format_time(secs):
     minute = secs // 60
     hour = minute // 60
 
-    mat = " " + str(minute) + ":" + str(sec)
+    if sec<10:
+        mat = " " + str(minute) + ":0" + str(sec)
+    else:
+        mat = " " + str(minute) + ":" + str(sec)
     return mat
 
 
 def redraw_window(win, board, time, strikes, colors):
     win.fill(colors["background"])
     # Draw time
-    fnt = pygame.font.SysFont("timesnewroman", 40)
+    fnt = pygame.font.SysFont("cambria", 40)
     text = fnt.render("Time: " + format_time(time), 1, colors["text"])
     text_rect = text.get_rect()
     text_rect.topright = (win.get_width() - 30, 20) # Position at the top right
@@ -294,7 +298,7 @@ def redraw_window(win, board, time, strikes, colors):
     pygame.draw.rect(win, colors["grid_lines"], pygame.Rect(rect_x, rect_y, rect_width, rect_height), 2)
 
     # Render and position the "n=Night Mode" text
-    fnt = pygame.font.SysFont("timesnewroman", 20)
+    fnt = pygame.font.SysFont("cambria", 20)
 
     options = [
         ("n = Night Mode", 5),
