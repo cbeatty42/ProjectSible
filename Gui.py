@@ -61,7 +61,8 @@ class Grid:
             self.board, self.backupBoard = load("board.json")
         
         if not loadFile or self.board == None:
-            self.backupBoard = self.board = generate_sudoku_board(difficulty)
+            self.board = generate_sudoku_board(difficulty)
+            self.backupBoard = [row[:] for row in self.board]
             save("board.json", self.board, self.backupBoard)
 
         self.cubes = [[Cube(self.board[r][c], r, c, width, height) for c in range(cols)] for r in range(rows)]
@@ -70,6 +71,13 @@ class Grid:
         self.model = None
         self.selected = None
 
+    def reset(self):
+        self.board = [row[:] for row in self.backupBoard]
+        for row in range(len(self.cubes)):
+            for column in range(len(self.board[row])):
+                self.cubes[row][column].set(self.board[row][column])
+        save("board.json", self.board, self.backupBoard)
+        
     def update_model(self):
         self.model = [[self.cubes[i][j].value for j in range(self.cols)] for i in range(self.rows)]
 
