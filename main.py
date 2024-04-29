@@ -69,7 +69,7 @@ def main():
                     redraw_window(win, board, play_time, strikes, colors)
                 #use r key to reset board and time.
                 if event.key==pygame.K_r and (event.mod & pygame.KMOD_CTRL):
-                    board = Grid(win,9, 9, 540, 540, False, difficulty)
+                    board.reset()
                     key = None
                     start = time.time()
                     strikes = 0
