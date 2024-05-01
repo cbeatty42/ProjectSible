@@ -37,67 +37,75 @@ def main():
                     key = 7
                 if event.key == pygame.K_8:
                     key = 8
+
                 if event.key == pygame.K_9:
                     key = 9
                 if event.key == pygame.K_BACKSPACE:
-                    key = 0
+                    if board.selected:
+                        row,column=board.selected
+                        board.reset_cube(row, column)
+                        key = 0
                 if event.key == pygame.K_DELETE:
-                    board.clear()
-                    key = None
+                    if board.selected:
+                        row,column=board.selected
+                        board.reset_cube(row,column)
+                        key = 0
                 if event.key == pygame.K_RETURN: #if Enter is pressed
                     i, j = board.selected
                     if board.cubes[i][j].temp != 0:
-                        if board.place(board.cubes[i][j].temp):
-                            print("Success")
-                        else:
-                            print("Wrong")
-                            #strikes += 1
+                        board.place(board.cubes[i][j].temp)
                         key = None
 
-                        if board.is_finished():
+                    '''   
+                    if board.is_finished():
                             print("Game over")
                             run = False
                             display_game_over(win, colors)
                             time.sleep(3) # Pause for 3 seconds before closing the window
+                    '''
                 #use n key to set night mode
                 if event.key == pygame.K_n:
-                    night_mode = toggle_night_mode(win, board, play_time, strikes, night_mode)
+                    night_mode = toggle_night_mode(win, board, play_time, night_mode)
                     if night_mode:
                         colors = NIGHT_MODE_COLORS
                     else:
                         colors = DAY_MODE_COLORS
-                    redraw_window(win, board, play_time, strikes, colors)
+                    redraw_window(win, board, play_time, colors)
                 #use r key to reset board and time.
                 if event.key==pygame.K_r and (event.mod & pygame.KMOD_CTRL):
                     board.reset()
                     key = None
                     start = time.time()
-                    strikes = 0
                 #various keys are used to set the difficulty
                 if event.key==pygame.K_h and (event.mod & pygame.KMOD_CTRL):
-                    difficulty=2
+                    difficulty=2 #Hard difficulty
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
                     start = time.time()
-                    strikes = 0
                 if event.key==pygame.K_m and (event.mod & pygame.KMOD_CTRL):
-                    difficulty=3
+                    difficulty=3 #Medium difficulty
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
                     start = time.time()
-                    strikes = 0
                 if event.key==pygame.K_e and (event.mod & pygame.KMOD_CTRL):
-                    difficulty=4
+                    difficulty=4 #Easy
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
                     start = time.time()
-                    strikes = 0
                 if event.key==pygame.K_v and (event.mod & pygame.KMOD_CTRL):
-                    difficulty=5
+                    difficulty=5 #Very Easy
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
                     start = time.time()
-                    strikes = 0
+                if event.key==pygame.K_c and (event.mod & pygame.KMOD_CTRL):
+                    #C+CTRL verifies you have a correct board
+                    isTheBoardSolved=board.is_solved()
+                    if isTheBoardSolved:
+                        print("Game over")
+                        run = False
+                        display_game_over(win, colors)
+                        time.sleep(3)
+                    
                 #arrow keys used to move around
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     if board.selected:
@@ -148,7 +156,7 @@ def main():
             board.sketch(key)
   
 
-        redraw_window(win, board, play_time, strikes, colors)
+        redraw_window(win, board, play_time, colors)
 
         pygame.display.update()
 

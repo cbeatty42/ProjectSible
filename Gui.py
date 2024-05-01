@@ -12,7 +12,8 @@ DAY_MODE_COLORS = {
     "text": (0, 0, 0),
     "selected": (255, 0, 255),
     "cube_text": (0, 0, 0),
-    "cube_temp_text": (50, 50, 255)
+    "cube_temp_text": (50, 50, 255),
+    "cube_entry_text": (255, 0, 255)
 }
 
 NIGHT_MODE_COLORS = {
@@ -22,10 +23,11 @@ NIGHT_MODE_COLORS = {
     "text": (255, 255, 255),
     "selected": (255, 0, 255),
     "cube_text": (255, 255, 255),
-    "cube_temp_text": (100, 100, 255)
+    "cube_temp_text": (100, 100, 255),
+    "cube_entry_text": (255, 0, 255)
 }
 
-def toggle_night_mode(win, board, time, strikes, night_mode):
+def toggle_night_mode(win, board, time, night_mode):
     global DAY_MODE_COLORS, NIGHT_MODE_COLORS
     if night_mode:
         # Switch to day mode
@@ -37,7 +39,7 @@ def toggle_night_mode(win, board, time, strikes, night_mode):
     # Update colors in the board and redraw
     win.fill(colors["background"])
     board.draw(win, colors)
-    redraw_window(win, board, time, strikes, colors)
+    redraw_window(win, board, time, colors)
     pygame.display.update()
 
     return not night_mode # Return the new mode
@@ -65,10 +67,9 @@ class Grid:
             self.backupBoard = [row[:] for row in self.board]
             save("board.json", self.board, self.backupBoard)
 
-        self.cubes = [[Cube(self.board[r][c], r, c, width, height) for c in range(cols)] for r in range(rows)]
+        self.cubes = [[Cube(self.board[r][c], r, c, width, height, self.backupBoard) for c in range(cols)] for r in range(rows)]
         self.width = width
         self.height = height
-        self.model = None
         self.selected = None
 
     def reset(self):
@@ -78,23 +79,19 @@ class Grid:
                 self.cubes[row][column].set(self.board[row][column])
         save("board.json", self.board, self.backupBoard)
         
-    def update_model(self):
-        self.model = [[self.cubes[i][j].value for j in range(self.cols)] for i in range(self.rows)]
+    def reset_cube(self,row,column):
+        self.board[row][column]=self.backupBoard[row][column]
+        self.cubes[row][column].set(self.board[row][column])
+        save("board.json", self.board, self.backupBoard)
+        print("reset: ["+ str(column+1)+","+str(row+1)+"]")
+
 
     def place(self, val):
         row, col = self.selected
         if self.cubes[row][col].value == 0:
             self.cubes[row][col].set(val)
-            self.update_model()
-
-            if valid(self.model, val, (row, col)) and solve(self.model):
-                self.board[row][col] = val
-                return True
-            else:
-                self.cubes[row][col].set(0)
-                self.cubes[row][col].set_temp(0)
-                self.update_model()
-                return False
+            self.board[row][col] = val
+            print("Placement: ["+ str(col+1)+","+str(row+1)+"]")
 
     def sketch(self, val):
         row, col = self.selected
@@ -126,7 +123,7 @@ class Grid:
             for j in range(self.cols):
                 x = start_x + j * (cube_size + gap)
                 y = start_y + i * (cube_size + gap)
-                self.cubes[i][j].draw(win, colors, x, y, cube_size, gap)
+                self.cubes[i][j].draw(win, colors, x, y, cube_size, gap, i, j)
 
     def select(self, row, col):
         # Reset all other
@@ -164,18 +161,42 @@ class Grid:
         return int(y), int(x)
     
     def is_finished(self):
+        #checks if there are no empty spaces
         for i in range(self.rows):
             for j in range(self.cols):
                 if self.cubes[i][j].value == 0:
                     return False
         return True
+    
+    def is_solved(self):
+        """
+        Check if the Sudoku board is completely solved according to the rules of Sudoku.
+        Returns True if the board is solved, False otherwise.
+        """
+        # Check rows
+        for row in self.board:
+            if len(set(row))!= 9 or 0 in row:
+                return False
 
+        # Check columns
+        for col in zip(*self.board):
+            if len(set(col))!= 9 or 0 in col:
+                return False
+
+        # Check 3x3 sub-grids
+        for i in range(0, 9, 3):
+            for j in range(0, 9, 3):
+                sub_grid = [self.board[x][y] for x in range(i, i + 3) for y in range(j, j + 3)]
+                if len(set(sub_grid))!= 9 or 0 in sub_grid:
+                    return False
+
+        return True
 
 class Cube:
     rows = 9
     cols = 9
 
-    def __init__(self, value, row, col, width, height):
+    def __init__(self, value, row, col, width, height, backupBoard):
         self.value = value
         self.temp = 0
         self.row = row
@@ -183,16 +204,22 @@ class Cube:
         self.width = width
         self.height = height
         self.selected = False
+        self.backupBoard=backupBoard
 
-    def draw(self, win, colors, x, y, size, gap):
+    def draw(self, win, colors, x, y, size, gap, i, j):
             fnt = pygame.font.SysFont("cambria", 60)
+            
 
             if self.temp != 0 and self.value == 0:
                 text = fnt.render(str(self.temp), 1, colors["cube_temp_text"])
                 win.blit(text, (x + 5, y + 5))
+            elif self.value!=0 and self.backupBoard[i][j]!=self.value:
+               text = fnt.render(str(self.value), 1, colors["cube_entry_text"])
+               win.blit(text, (x + (size / 2 - text.get_width() / 2), y + (size / 2 - text.get_height() / 2)))
             elif self.value != 0:
                 text = fnt.render(str(self.value), 1, colors["cube_text"])
                 win.blit(text, (x + (size / 2 - text.get_width() / 2), y + (size / 2 - text.get_height() / 2)))
+            
 
             if self.selected:
                 #this draws the red rectangle 
@@ -263,14 +290,19 @@ def format_time(secs):
     minute = secs // 60
     hour = minute // 60
 
-    if sec<10:
-        mat = " " + str(minute) + ":0" + str(sec)
+    if sec<10 and hour>=1:
+        mat = " "+ str(hour) + ":" + str(minute-(60*hour)) + ":0" + str(sec)
+    elif sec<10:
+        mat = " " + str(minute-(60*hour)) + ":0" + str(sec)
+    elif hour>=1:
+        mat=" "+ str(hour) + ":" + str(minute-(60*hour)) + ":" + str(sec)
     else:
-        mat = " " + str(minute) + ":" + str(sec)
+        mat = " " + str(minute-(60*hour)) + ":" + str(sec)
+
     return mat
 
 
-def redraw_window(win, board, time, strikes, colors):
+def redraw_window(win, board, time, colors):
     win.fill(colors["background"])
     # Draw time
     fnt = pygame.font.SysFont("cambria", 40)
@@ -278,13 +310,8 @@ def redraw_window(win, board, time, strikes, colors):
     text_rect = text.get_rect()
     text_rect.topright = (win.get_width() - 30, 20) # Position at the top right
     win.blit(text, text_rect)
-    # Draw Strikes (Code may not be used)
+    
 
-    text = fnt.render("X " * strikes, 1, colors["text"])
-    text_rect = text.get_rect()
-    text_rect.left = 20 
-    text_rect.bottom = win.get_height() - 20 # Position at the bottom
-    win.blit(text, text_rect)
     # Draw grid and board
     board.draw(win, colors)
 
@@ -310,14 +337,15 @@ def redraw_window(win, board, time, strikes, colors):
 
     options = [
         ("n = Night Mode", 5),
-        ("CTRL+r = Refresh", 30),
-        ("--------------------",42),
-        ("difficulty settings",55),
-        ("--------------------",67),
-        ("CTRL+v = Very Easy", 80),
-        ("CTRL+e = Easy", 105),
-        ("CTRL+m = Medium", 130),
-        ("CTRL+h = Hard", 155)
+        ("CTRL+r = Reset", 30),
+        ("CTRL+c = Check", 55),
+        ("--------------------",80),
+        ("difficulty settings",92),
+        ("--------------------",104),
+        ("CTRL+v = Very Easy", 129),
+        ("CTRL+e = Easy", 154),
+        ("CTRL+m = Medium", 179),
+        ("CTRL+h = Hard", 204)
 
     ]
 
