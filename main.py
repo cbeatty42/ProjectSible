@@ -4,18 +4,22 @@ def main():
     colors = NIGHT_MODE_COLORS
     win = pygame.display.set_mode((0, 0),pygame.RESIZABLE)
     pygame.display.set_caption("Project Sible")
-    difficulty=3
+    difficulty = 3
     board = Grid(win,9, 9, 540, 540, True, difficulty)
     key = None
     run = True
-    
-    start = time.time()
+
     strikes = 0
     night_mode = True
+    offset = board.get_time()
+    start = time.time()
+
+    print(offset)
+    print(start)
 
     while run:
 
-        play_time = round(time.time() - start)
+        board.set_time(round(offset + time.time() - start))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -79,24 +83,32 @@ def main():
                 #various keys are used to set the difficulty
                 if event.key==pygame.K_h and (event.mod & pygame.KMOD_CTRL):
                     difficulty=2 #Hard difficulty
+                    offset = 0
+                    start = time.time()
+                    board.set_time(0)
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
-                    start = time.time()
                 if event.key==pygame.K_m and (event.mod & pygame.KMOD_CTRL):
                     difficulty=3 #Medium difficulty
+                    offset = 0
+                    start = time.time()
+                    board.set_time(0)
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
-                    start = time.time()
                 if event.key==pygame.K_e and (event.mod & pygame.KMOD_CTRL):
                     difficulty=4 #Easy
+                    offset = 0
+                    start = time.time()
+                    board.set_time(0)
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
-                    start = time.time()
                 if event.key==pygame.K_v and (event.mod & pygame.KMOD_CTRL):
                     difficulty=5 #Very Easy
+                    offset = 0
+                    start = time.time()
+                    board.set_time(0)
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
-                    start = time.time()
                 if event.key==pygame.K_c and (event.mod & pygame.KMOD_CTRL):
                     #C+CTRL verifies you have a correct board
                     isTheBoardSolved=board.is_solved()
@@ -156,11 +168,12 @@ def main():
             board.sketch(key)
   
 
-        redraw_window(win, board, play_time, colors)
+        redraw_window(win, board, board.get_time(), colors)
 
         pygame.display.update()
 
-    save("board.json", board.board, board.backupBoard)
+    print(board.get_time())
+    save("board.json", board.board, board.backupBoard, board.get_bestTime(), board.get_time())
 
 main()
 pygame.quit()

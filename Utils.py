@@ -5,18 +5,18 @@ import json
 def load(path):
     try:
         f = open(path, "r")
-        boards_json = json.load(f)
+        board_json = json.load(f)
         f.close()
-        return boards_json["board"], boards_json["backupBoard"]
+        return board_json["board"], board_json["backupBoard"], board_json["bestTime"], board_json["currentTime"]
     except:
-        return None, None
+        return None, None, 0, 0
 
 # Save file
 # Accepts a path and dictionary
-def save(path, board, backupBoard):
+def save(path, board, backupBoard, bestTime, currentTime):
     with open(path, "w") as file:
-        save_dictionary = {"board":board, "backupBoard":backupBoard}
-        json.dump(save_dictionary, file)
+        save_dictionary = {"board":board, "backupBoard":backupBoard, "bestTime":bestTime, "currentTime":currentTime}
+        _ = json.dump(save_dictionary, file)
         file.close()
 
 # Is in row

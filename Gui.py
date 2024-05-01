@@ -54,35 +54,50 @@ def display_game_over(win, colors):
 
 class Grid:
     def __init__(self, win, rows, cols, width, height, loadFile, difficulty):
-        self.win=win
+        self.win = win
         self.rows = rows
         self.cols = cols
-        self.loadFile=loadFile 
+        self.loadFile = loadFile
+        self.currentTime = time.time()
+        self.bestTime = time.time()
 
         if loadFile:
-            self.board, self.backupBoard = load("board.json")
+            self.board, self.backupBoard, self.bestTime, self.currentTime = load("board.json")
         
         if not loadFile or self.board == None:
             self.board = generate_sudoku_board(difficulty)
             self.backupBoard = [row[:] for row in self.board]
-            save("board.json", self.board, self.backupBoard)
+            
+            save("board.json", self.board, self.backupBoard, self.bestTime, self.currentTime)
 
         self.cubes = [[Cube(self.board[r][c], r, c, width, height, self.backupBoard) for c in range(cols)] for r in range(rows)]
         self.width = width
         self.height = height
         self.selected = None
 
+    def set_time(self, time):
+        self.currentTime = time
+
+    def get_time(self):
+        return self.currentTime
+
+    def set_bestTime(self, time):
+        self.bestTime = time
+
+    def get_bestTime(self):
+        return self.bestTime
+
     def reset(self):
         self.board = [row[:] for row in self.backupBoard]
         for row in range(len(self.cubes)):
             for column in range(len(self.board[row])):
                 self.cubes[row][column].set(self.board[row][column])
-        save("board.json", self.board, self.backupBoard)
+        save("board.json", self.board, self.backupBoard, self.currentTime, self.bestTime)
         
     def reset_cube(self,row,column):
         self.board[row][column]=self.backupBoard[row][column]
         self.cubes[row][column].set(self.board[row][column])
-        save("board.json", self.board, self.backupBoard)
+        save("board.json", self.board, self.backupBoard, self.currentTime, self.bestTime)
         print("reset: ["+ str(column+1)+","+str(row+1)+"]")
 
 
@@ -285,10 +300,19 @@ def solve(board):
     return False
 
 
-def format_time(secs):
+def time_from_units(sec, minute, hour):
+    return ((hour * 60) + (minute * 60) + sec)
+
+
+def get_time_units(secs):
     sec = secs % 60
     minute = secs // 60
     hour = minute // 60
+    return sec, minute, hour
+
+
+def format_time(secs):
+    sec, minute, hour = get_time_units(secs)
 
     if sec<10 and hour>=1:
         mat = " "+ str(hour) + ":" + str(minute-(60*hour)) + ":0" + str(sec)
