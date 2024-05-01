@@ -14,9 +14,6 @@ def main():
     offset = board.get_time()
     start = time.time()
 
-    print(offset)
-    print(start)
-
     while run:
 
         board.set_time(round(offset + time.time() - start))
@@ -76,53 +73,56 @@ def main():
                         colors = DAY_MODE_COLORS
                     redraw_window(win, board, play_time, colors)
                 #use r key to reset board and time.
-                if event.key==pygame.K_r and (event.mod & pygame.KMOD_CTRL):
+                if event.key == pygame.K_r and (event.mod & pygame.KMOD_CTRL):
                     board.reset()
                     key = None
                     start = time.time()
                 #various keys are used to set the difficulty
-                if event.key==pygame.K_h and (event.mod & pygame.KMOD_CTRL):
-                    difficulty=2 #Hard difficulty
+                if event.key == pygame.K_h and (event.mod & pygame.KMOD_CTRL):
+                    difficulty = 2 #Hard difficulty
                     offset = 0
                     start = time.time()
                     board.set_time(0)
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
-                if event.key==pygame.K_m and (event.mod & pygame.KMOD_CTRL):
-                    difficulty=3 #Medium difficulty
+                if event.key == pygame.K_m and (event.mod & pygame.KMOD_CTRL):
+                    difficulty = 3 #Medium difficulty
                     offset = 0
                     start = time.time()
                     board.set_time(0)
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
-                if event.key==pygame.K_e and (event.mod & pygame.KMOD_CTRL):
-                    difficulty=4 #Easy
+                if event.key == pygame.K_e and (event.mod & pygame.KMOD_CTRL):
+                    difficulty = 4 #Easy
                     offset = 0
                     start = time.time()
                     board.set_time(0)
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
-                if event.key==pygame.K_v and (event.mod & pygame.KMOD_CTRL):
-                    difficulty=5 #Very Easy
+                if event.key == pygame.K_v and (event.mod & pygame.KMOD_CTRL):
+                    difficulty = 5 #Very Easy
                     offset = 0
                     start = time.time()
                     board.set_time(0)
                     board = Grid(win,9, 9, 540, 540, False, difficulty)
                     key = None
-                if event.key==pygame.K_c and (event.mod & pygame.KMOD_CTRL):
+                if event.key == pygame.K_c and (event.mod & pygame.KMOD_CTRL):
                     #C+CTRL verifies you have a correct board
-                    isTheBoardSolved=board.is_solved()
+                    isTheBoardSolved = board.is_solved()
                     if isTheBoardSolved:
                         print("Game over")
                         run = False
                         display_game_over(win, colors)
                         time.sleep(3)
+                        
+                        if board.get_time() < board.get_bestTime() or board.get_bestTime() == -1:
+                            board.set_bestTime(board.get_time())
                     
                 #arrow keys used to move around
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     if board.selected:
                         row, col = board.selected
-                        key=None
+                        key = None
                         if col > 0:
                             board.select(row, col - 1)
                     else:
@@ -130,7 +130,7 @@ def main():
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     if board.selected:
                         row, col = board.selected
-                        key=None
+                        key = None
                         if col < 8:
                             board.select(row, col + 1)
                     else:
@@ -138,7 +138,7 @@ def main():
                 if event.key == pygame.K_UP or event.key == pygame.K_w:
                     if board.selected:
                         row, col = board.selected
-                        key=None
+                        key = None
                         if row > 0:
                             board.select(row - 1, col)
                     else:
@@ -146,14 +146,14 @@ def main():
                 if event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     if board.selected:
                         row, col = board.selected
-                        key=None
+                        key = None
                         if row < 8:
                             board.select(row + 1, col)
                     else:
                         board.select(5,4)
                 #use esc key to force quit game
-                if event.key==pygame.K_ESCAPE:
-                    run=False
+                if event.key == pygame.K_ESCAPE:
+                    run = False
 
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -168,11 +168,10 @@ def main():
             board.sketch(key)
   
 
-        redraw_window(win, board, board.get_time(), colors)
+        redraw_window(win, board, board.get_time(), board.get_bestTime(), colors)
 
         pygame.display.update()
 
-    print(board.get_time())
     save("board.json", board.board, board.backupBoard, board.get_bestTime(), board.get_time())
 
 main()

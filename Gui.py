@@ -326,15 +326,21 @@ def format_time(secs):
     return mat
 
 
-def redraw_window(win, board, time, colors):
+def redraw_window(win, board, time, bestTime, colors):
     win.fill(colors["background"])
     # Draw time
     fnt = pygame.font.SysFont("cambria", 40)
+
     text = fnt.render("Time: " + format_time(time), 1, colors["text"])
     text_rect = text.get_rect()
     text_rect.topright = (win.get_width() - 30, 20) # Position at the top right
     win.blit(text, text_rect)
     
+    if bestTime != -1:
+        text = fnt.render("Best Time: " + format_time(bestTime), 1, colors["text"])
+        text_rect = text.get_rect()
+        text_rect.topright = (win.get_width() - 30, 40) # Position at the top right
+        win.blit(text, text_rect)   
 
     # Draw grid and board
     board.draw(win, colors)

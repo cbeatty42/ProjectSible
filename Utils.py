@@ -9,7 +9,7 @@ def load(path):
         f.close()
         return board_json["board"], board_json["backupBoard"], board_json["bestTime"], board_json["currentTime"]
     except:
-        return None, None, 0, 0
+        return None, None, -1, 0
 
 # Save file
 # Accepts a path and dictionary
