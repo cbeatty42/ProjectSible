@@ -39,7 +39,7 @@ def toggle_night_mode(win, board, night_mode):
     # Update colors in the board and redraw
     win.fill(colors["background"])
     board.draw(win, colors)
-    redraw_window(win, board, board.get_time(), board.get_bestTime(), colors)
+    redraw_window(win, board, colors)
     pygame.display.update()
 
     return not night_mode # Return the new mode
@@ -53,13 +53,13 @@ def display_game_over(win, colors):
 
 
 class Grid:
-    def __init__(self, win, rows, cols, width, height, loadFile, difficulty):
+    def __init__(self, win, rows, cols, width, height, loadFile, difficulty, bestTime = -1):
         self.win = win
         self.rows = rows
         self.cols = cols
         self.loadFile = loadFile
         self.currentTime = time.time()
-        self.bestTime = -1
+        self.bestTime = bestTime
 
         if loadFile:
             self.board, self.backupBoard, self.bestTime, self.currentTime = load("board.json")
@@ -326,18 +326,18 @@ def format_time(secs):
     return mat
 
 
-def redraw_window(win, board, time, bestTime, colors):
+def redraw_window(win, board, colors):
     win.fill(colors["background"])
     # Draw time
     fnt = pygame.font.SysFont("cambria", 40)
 
-    text = fnt.render("Time: " + format_time(time), 1, colors["text"])
+    text = fnt.render("Time: " + format_time(board.get_time()), 1, colors["text"])
     text_rect = text.get_rect()
     text_rect.topright = (win.get_width() - 30, 20) # Position at the top right
     win.blit(text, text_rect)
     
-    if bestTime != -1:
-        text = fnt.render("Best Time: " + format_time(bestTime), 1, colors["text"])
+    if board.get_bestTime() != -1:
+        text = fnt.render("Best Time: " + format_time(board.get_bestTime()), 1, colors["text"])
         text_rect = text.get_rect()
         text_rect.topright = (win.get_width() - 30, 60) # Position at the top right
         win.blit(text, text_rect)   

@@ -71,7 +71,7 @@ def main():
                         colors = NIGHT_MODE_COLORS
                     else:
                         colors = DAY_MODE_COLORS
-                    redraw_window(win, board, play_time, colors)
+                    redraw_window(win, board, colors)
                 #use r key to reset board and time.
                 if event.key == pygame.K_r and (event.mod & pygame.KMOD_CTRL):
                     board.reset()
@@ -83,28 +83,28 @@ def main():
                     offset = 0
                     start = time.time()
                     board.set_time(0)
-                    board = Grid(win,9, 9, 540, 540, False, difficulty)
+                    board = Grid(win,9, 9, 540, 540, False, difficulty, board.get_bestTime())
                     key = None
                 if event.key == pygame.K_m and (event.mod & pygame.KMOD_CTRL):
                     difficulty = 3 #Medium difficulty
                     offset = 0
                     start = time.time()
                     board.set_time(0)
-                    board = Grid(win,9, 9, 540, 540, False, difficulty)
+                    board = Grid(win,9, 9, 540, 540, False, difficulty, board.get_bestTime())
                     key = None
                 if event.key == pygame.K_e and (event.mod & pygame.KMOD_CTRL):
                     difficulty = 4 #Easy
                     offset = 0
                     start = time.time()
                     board.set_time(0)
-                    board = Grid(win,9, 9, 540, 540, False, difficulty)
+                    board = Grid(win,9, 9, 540, 540, False, difficulty, board.get_bestTime())
                     key = None
                 if event.key == pygame.K_v and (event.mod & pygame.KMOD_CTRL):
                     difficulty = 5 #Very Easy
                     offset = 0
                     start = time.time()
                     board.set_time(0)
-                    board = Grid(win,9, 9, 540, 540, False, difficulty)
+                    board = Grid(win,9, 9, 540, 540, False, difficulty, board.get_bestTime())
                     key = None
                 if event.key == pygame.K_c and (event.mod & pygame.KMOD_CTRL):
                     #C+CTRL verifies you have a correct board
@@ -168,7 +168,7 @@ def main():
             board.sketch(key)
   
 
-        redraw_window(win, board, board.get_time(), board.get_bestTime(), colors)
+        redraw_window(win, board, colors)
 
         pygame.display.update()
 
