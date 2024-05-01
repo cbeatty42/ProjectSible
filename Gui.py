@@ -92,6 +92,7 @@ class Grid:
         for row in range(len(self.cubes)):
             for column in range(len(self.board[row])):
                 self.cubes[row][column].set(self.board[row][column])
+                self.cubes[row][column].set_temp(0)
         save("board.json", self.board, self.backupBoard, self.currentTime, self.bestTime)
         
     def reset_cube(self,row,column):
