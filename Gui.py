@@ -27,7 +27,7 @@ NIGHT_MODE_COLORS = {
     "cube_entry_text": (255, 0, 255)
 }
 
-def toggle_night_mode(win, board, time, night_mode):
+def toggle_night_mode(win, board, night_mode):
     global DAY_MODE_COLORS, NIGHT_MODE_COLORS
     if night_mode:
         # Switch to day mode
@@ -39,7 +39,7 @@ def toggle_night_mode(win, board, time, night_mode):
     # Update colors in the board and redraw
     win.fill(colors["background"])
     board.draw(win, colors)
-    redraw_window(win, board, time, colors)
+    redraw_window(win, board, board.get_time(), board.get_bestTime(), colors)
     pygame.display.update()
 
     return not night_mode # Return the new mode
@@ -59,7 +59,7 @@ class Grid:
         self.cols = cols
         self.loadFile = loadFile
         self.currentTime = time.time()
-        self.bestTime = time.time()
+        self.bestTime = -1
 
         if loadFile:
             self.board, self.backupBoard, self.bestTime, self.currentTime = load("board.json")
@@ -339,7 +339,7 @@ def redraw_window(win, board, time, bestTime, colors):
     if bestTime != -1:
         text = fnt.render("Best Time: " + format_time(bestTime), 1, colors["text"])
         text_rect = text.get_rect()
-        text_rect.topright = (win.get_width() - 30, 40) # Position at the top right
+        text_rect.topright = (win.get_width() - 30, 60) # Position at the top right
         win.blit(text, text_rect)   
 
     # Draw grid and board

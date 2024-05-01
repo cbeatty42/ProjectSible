@@ -66,7 +66,7 @@ def main():
                     '''
                 #use n key to set night mode
                 if event.key == pygame.K_n:
-                    night_mode = toggle_night_mode(win, board, play_time, night_mode)
+                    night_mode = toggle_night_mode(win, board, night_mode)
                     if night_mode:
                         colors = NIGHT_MODE_COLORS
                     else:
