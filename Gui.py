@@ -44,11 +44,11 @@ def toggle_night_mode(win, board, night_mode):
 
     return not night_mode # Return the new mode
 
-def display_game_over(win, colors):
+def display_message(win, colors, message):
     win.fill(colors["background"])
     font = pygame.font.SysFont("cambria", 40)
-    game_over_text = font.render('SUDOKU!!!', True, colors["super_text"])
-    win.blit(game_over_text, (win.get_width() // 2 - game_over_text.get_width() // 2, win.get_height() // 2 - game_over_text.get_height() // 2))
+    message_text = font.render(message, True, colors["super_text"])
+    win.blit(message_text, (win.get_width() // 2 - message_text.get_width() // 2, win.get_height() // 2 - message_text.get_height() // 2))
     pygame.display.update()
 
 

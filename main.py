@@ -9,7 +9,6 @@ def main():
     key = None
     run = True
 
-    strikes = 0
     night_mode = True
     offset = board.get_time()
     start = time.time()
@@ -38,9 +37,9 @@ def main():
                     key = 7
                 if event.key == pygame.K_8:
                     key = 8
-
                 if event.key == pygame.K_9:
                     key = 9
+
                 if event.key == pygame.K_BACKSPACE:
                     if board.selected:
                         row,column=board.selected
@@ -109,14 +108,24 @@ def main():
                 if event.key == pygame.K_c and (event.mod & pygame.KMOD_CTRL):
                     #C+CTRL verifies you have a correct board
                     isTheBoardSolved = board.is_solved()
+                    isTheBoardFilled = board.is_finished()
                     if isTheBoardSolved:
-                        print("Game over")
-                        run = False
-                        display_game_over(win, colors)
-                        time.sleep(3)
-                        
                         if board.get_time() < board.get_bestTime() or board.get_bestTime() == -1:
                             board.set_bestTime(board.get_time())
+                            print("Check: Game over & new best time")
+                            message="Congratulations! New Best Time: "+ str(board.get_bestTime)
+                        else:
+                            print("Check: Game over")
+                            message="Congratulations! You won another puzzle!"
+                        board = Grid(win,9, 9, 540, 540, False, difficulty, board.get_bestTime())
+                    if not isTheBoardFilled:
+                        print("Check: Board not filled ")
+                        message="Board not filled"
+                    if isTheBoardFilled and not isTheBoardSolved:
+                        print("Check: Board filled, but not solved")
+                        message="Board filled, but puzzle not solved"
+                    display_message(win, colors, message)
+                    time.sleep(3)
                     
                 #arrow keys used to move around
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
