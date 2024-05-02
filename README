@@ -1,0 +1,9 @@
+Ensure that python3 is installed on your system by opening your terminal and entering 'python3'.
+    If python3 is installed, you will enter its REPL mode.
+    Enter exit() to leave this mode.
+
+Enter pip install pygame.
+    If pygame is not installed, pip will install it.
+
+Navigate to this directory and enter 'python3 main.py'
+
