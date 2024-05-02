@@ -113,11 +113,12 @@ def main():
                         if board.get_time() < board.get_bestTime() or board.get_bestTime() == -1:
                             board.set_bestTime(board.get_time())
                             print("Check: Game over & new best time")
-                            message="Congratulations! New Best Time: "+ str(board.get_bestTime)
+                            message="Congratulations! New Best Time!"
                         else:
                             print("Check: Game over")
                             message="Congratulations! You won another puzzle!"
                         board = Grid(win,9, 9, 540, 540, False, difficulty, board.get_bestTime())
+                        board.set_time(0)
                     if not isTheBoardFilled:
                         print("Check: Board not filled ")
                         message="Board not filled"

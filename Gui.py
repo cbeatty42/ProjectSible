@@ -338,7 +338,7 @@ def redraw_window(win, board, colors):
     win.blit(text, text_rect)
     
     if board.get_bestTime() != -1:
-        text = fnt.render("Best Time: " + format_time(board.get_bestTime()), 1, colors["text"])
+        text = fnt.render("Best: " + format_time(board.get_bestTime()), 1, colors["text"])
         text_rect = text.get_rect()
         text_rect.topright = (win.get_width() - 30, 60) # Position at the top right
         win.blit(text, text_rect)   
